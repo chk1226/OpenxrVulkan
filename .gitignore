@@ -70,3 +70,10 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+/Assets/Plugins
+Assets/Plugins.meta
+/Assets/Samples/VIVE OpenXR Plugin
+/Assets/TextMesh Pro
+Assets/Samples/VIVE OpenXR Plugin.meta
+/Assets/TutorialInfo
+Assets/TutorialInfo.meta
