@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public class HK_SCPlayerCtrl : MonoBehaviour
 {
@@ -12,11 +13,18 @@ public class HK_SCPlayerCtrl : MonoBehaviour
     public InputActionReference JoyStitckSecondButton;
     public InputActionReference JoyStitckPrimaryButton;
     public InputActionReference JoyStitckTrigger;
-    protected bool hasBeenTrigger = false;
     public InputActionAsset ActionAsset;
     public HK_RenderCompositionLayer hK_RenderCompositionLayer = null;
+    public TextMeshProUGUI TextComp = null;
 
-    //protected bool ReloadAndReplay = false;
+
+
+    protected FrameTiming[] m_FrameTimings = new FrameTiming[15];
+    protected float RegFPS = 0.0f;
+    protected float FPS = 0.0f;
+    protected int FPSCount = 0;
+
+
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN
 #elif UNITY_ANDROID
     private static AndroidJavaClass unityPlayer;
@@ -35,7 +43,6 @@ public class HK_SCPlayerCtrl : MonoBehaviour
 
     private void OnDestroy()
     {
-        Close();
     }
 
     private void Awake()
@@ -103,23 +110,28 @@ public class HK_SCPlayerCtrl : MonoBehaviour
 
     public void Pause()
     {
-        SCPlayer.Pause();
+        if(SCPlayer.Closed) return;
+
+        if (!SCPlayer.IsPaused)
+        {
+            SCPlayer.Pause();
+        }
     }
     public void Close()
     {
-        SCPlayer.Close();
+        if(!SCPlayer.Closed)
+        {
+            SCPlayer.Close();
+        }
     }
 
     public void Play()
     {
+        if (SCPlayer.Closed)
+        {
+            Open();
+        }
         SCPlayer.Play();
-    }
-
-    public void ReloadVideoAndPlay()
-    {
-        Close();
-        Open();
-        Play();
     }
 
     private void OnEnable()
@@ -130,58 +142,79 @@ public class HK_SCPlayerCtrl : MonoBehaviour
         }
     }
 
+    protected void ShowDebugInfo()
+    {
+        if (!TextComp) return;
+
+
+        if (FPSCount == 10)
+        {
+            FPS = RegFPS / FPSCount;
+            RegFPS = 0.0f;
+            FPSCount = 0;
+        }
+        else
+        {
+            RegFPS += 1.0f / Time.smoothDeltaTime;
+            FPSCount++;
+        }
+
+        // Instruct FrameTimingManager to collect and cache information
+        FrameTimingManager.CaptureFrameTimings();
+
+
+        // Read cached information about N last frames (10 in this example)
+        // The returned value tells how many samples is actually returned
+        var ret = FrameTimingManager.GetLatestTimings((uint)m_FrameTimings.Length, m_FrameTimings);
+
+
+        if (TextComp)
+        {
+            string text = string.Format($"FPS : {FPS:F2}\n");
+            if (ret > 0)
+            {
+                float cpuFrameTime = 0;
+                float cpuMainFrameTime = 0;
+                float gpuFrameTime = 0;
+                for (int i = 0; i < m_FrameTimings.Length; i++)
+                {
+                    cpuFrameTime += (float)m_FrameTimings[i].cpuFrameTime;
+                    cpuMainFrameTime += (float)m_FrameTimings[i].cpuMainThreadFrameTime;
+                    gpuFrameTime += (float)m_FrameTimings[i].gpuFrameTime;
+                }
+                text += string.Format($"CPU: {cpuFrameTime / m_FrameTimings.Length:F2}ms\n");
+                text += string.Format($"CPU Main: {cpuMainFrameTime / m_FrameTimings.Length:F2}ms\n");
+                text += string.Format($"GPU: {gpuFrameTime / m_FrameTimings.Length:F2}ms\n");
+            }
+
+            TextComp.SetText(text);
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
-        if(!SCPlayer.IsPaused)
+        if(JoyStitckSecondButton.action.ReadValue<float>() > 0)
         {
-            if(JoyStitckSecondButton.action.ReadValue<float>() > 0)
-            {
-                Pause();
-            }
+            Pause();
         }
-        else if(SCPlayer.IsPaused)
+
+        if (JoyStitckPrimaryButton.action.ReadValue<float>() > 0)
         {
-            if (JoyStitckPrimaryButton.action.ReadValue<float>() > 0)
-            {
-                Play();
-            }
+            Play();
         }
 
 
         if (JoyStitckTrigger.action.ReadValue<float>() > 0)
         {
-            if(hK_RenderCompositionLayer && !hasBeenTrigger)
+            if(hK_RenderCompositionLayer)
             {
-                hasBeenTrigger = true;
-                if(hK_RenderCompositionLayer.isActiveAndEnabled)
-                {
-                    hK_RenderCompositionLayer.gameObject.SetActive(false);
-                }
-                else
-                {
-                    hK_RenderCompositionLayer.gameObject.SetActive(true);
-                }
+                hK_RenderCompositionLayer.RemoveCompositionLayer();
+                Close();
             }
         }
-        else
-        {
-            hasBeenTrigger = false;
-        }
-
-        //if(JoyStitckTrigger.action.ReadValue<bool>())
-        //{
-        //    if(!ReloadAndReplay)
-        //    {
-        //        ReloadVideoAndPlay();
-        //        ReloadAndReplay = true;
-        //    }
-        //}
-        //else
-        //{
-        //    if(ReloadAndReplay) ReloadAndReplay = false;
-        //}
 
 
+        ShowDebugInfo();
     }
 }

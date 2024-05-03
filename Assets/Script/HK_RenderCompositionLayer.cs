@@ -19,12 +19,17 @@ public class HK_RenderCompositionLayer : SCRenderTarget
     {
     }
 
+    public void RemoveCompositionLayer()
+    {
+        Destroy(compositionLayer);
+        compositionLayer = null;
+    }
     protected void CreateCompositionLayer(Texture texture)
     {
         if (compositionLayer) return;
 
         compositionLayer = gameObject.AddComponent<CompositionLayer>();
-        compositionLayer.layerType = CompositionLayer.LayerType.Overlay;
+        compositionLayer.layerType = CompositionLayer.LayerType.Underlay;
         compositionLayer.layerShape = CompositionLayer.LayerShape.Quad;
         compositionLayer.layerVisibility = CompositionLayer.Visibility.Both;
         compositionLayer.isDynamicLayer = true;
@@ -32,12 +37,6 @@ public class HK_RenderCompositionLayer : SCRenderTarget
     }
     private void Awake()
     {
-        //if (!compositionLayer)
-        //{
-        //    CreateCompositionLayer(defaultTexture);
-        //}
-
-        //compositionLayer.texture = defaultTexture;
     }
 
     protected override void OnRendererChanged()
