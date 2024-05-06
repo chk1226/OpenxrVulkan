@@ -357,6 +357,7 @@ GameObject:
   m_Component:
   - component: {fileID: 353929285}
   - component: {fileID: 353929286}
+  - component: {fileID: 353929287}
   m_Layer: 0
   m_Name: Left_CompositionLayerDisplayer
   m_TagString: Untagged
@@ -394,6 +395,42 @@ MonoBehaviour:
   player: {fileID: 461558603}
   defaultTexture: {fileID: 2800000, guid: fa8420a6be08d3c4f916662abbcae3ab, type: 3}
   switchNotUpdate: 0
+--- !u!114 &353929287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 353929282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 221c4e845ba39fa4396461ac8c3b9e8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPreviewingCylinder: 0
+  isPreviewingQuad: 0
+  generatedPreview: {fileID: 0}
+  layerType: 1
+  compositionDepth: 0
+  layerShape: 0
+  layerVisibility: 0
+  m_QuadWidth: 1
+  m_QuadHeight: 1
+  m_CylinderHeight: 1
+  m_CylinderArcLength: 1
+  m_CylinderRadius: 1
+  m_CylinderAngleOfArc: 180
+  lockMode: 0
+  isDynamicLayer: 0
+  applyColorScaleBias: 0
+  colorScale: {r: 1, g: 1, b: 1, a: 1}
+  colorBias: {r: 0, g: 0, b: 0, a: 0}
+  isProtectedSurface: 0
+  texture: {fileID: 0}
+  renderPriority: 0
+  trackingOrigin: {fileID: 0}
+  generatedUnderlayMesh: {fileID: 0}
+  generatedFallbackMesh: {fileID: 0}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -549,6 +586,8 @@ MonoBehaviour:
   JoyStitckPrimaryButton: {fileID: 11711766586467970, guid: 699f4d2073ed2e34ea7f7944795b868c,
     type: 3}
   JoyStitckTrigger: {fileID: 6960837491323481197, guid: 699f4d2073ed2e34ea7f7944795b868c,
+    type: 3}
+  JoyStitckGrip: {fileID: -8514278639596572500, guid: 699f4d2073ed2e34ea7f7944795b868c,
     type: 3}
   ActionAsset: {fileID: -944628639613478452, guid: 699f4d2073ed2e34ea7f7944795b868c,
     type: 3}
@@ -936,7 +975,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1708280285
 RectTransform:
   m_ObjectHideFlags: 0

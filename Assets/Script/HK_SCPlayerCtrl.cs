@@ -13,6 +13,7 @@ public class HK_SCPlayerCtrl : MonoBehaviour
     public InputActionReference JoyStitckSecondButton;
     public InputActionReference JoyStitckPrimaryButton;
     public InputActionReference JoyStitckTrigger;
+    public InputActionReference JoyStitckGrip;
     public InputActionAsset ActionAsset;
     public HK_RenderCompositionLayer hK_RenderCompositionLayer = null;
     public TextMeshProUGUI TextComp = null;
@@ -76,7 +77,7 @@ public class HK_SCPlayerCtrl : MonoBehaviour
         Debug.Log($"video w({render.SyntheticTexture.width}) h({render.SyntheticTexture.height})"); 
 
     }
-    protected string GetBasePath()
+    static protected string GetBasePath()
     {
         string _base = "";
         if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer)
@@ -85,20 +86,20 @@ public class HK_SCPlayerCtrl : MonoBehaviour
             _base = Application.persistentDataPath + "/Video";
         return _base;
     }
-    public string GetFilePath()
+    static public string GetFilePath(string _url)
     {
         string videoPath = "";
 
         if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer)
-            videoPath = GetBasePath() + "/" + URL + ".mp4";
+            videoPath = GetBasePath() + "/" + _url + ".mp4";
         else if (Application.platform == RuntimePlatform.Android)
-            videoPath = GetBasePath() + "/" + URL + ".mp4";
+            videoPath = GetBasePath() + "/" + _url + ".mp4";
         return videoPath;
     }
     public void Open()
     {
 
-        var videoUrl = GetFilePath();
+        var videoUrl = GetFilePath(URL);
         Debug.Log($"[_unity] {videoUrl}");
 
         SCPlayer.Open(MediaType.LocalFile, videoUrl);
@@ -171,6 +172,7 @@ public class HK_SCPlayerCtrl : MonoBehaviour
         if (TextComp)
         {
             string text = string.Format($"FPS : {FPS:F2}\n");
+            text += string.Format($"decoder FPS : {SCPlayer.decoderFps:F2}\n");
             if (ret > 0)
             {
                 float cpuFrameTime = 0;
@@ -211,6 +213,21 @@ public class HK_SCPlayerCtrl : MonoBehaviour
             {
                 hK_RenderCompositionLayer.RemoveCompositionLayer();
                 Close();
+            }
+        }
+
+        if(JoyStitckGrip.action.ReadValue<float>() > 0)
+        {
+            if(TextComp)
+            {
+                TextComp.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            if (TextComp)
+            {
+                TextComp.gameObject.SetActive(false);
             }
         }
 
